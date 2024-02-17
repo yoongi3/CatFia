@@ -1,7 +1,7 @@
 import React from "react"
 import { MainMenuStyled } from "./MainMenuStyled"
 import { Link } from "react-router-dom"
-import { Button } from "../../utils/Button/Button"
+import { Button, InverseButton } from "../../utils/Button/Button"
 
 const MainMenuScreen: React.FC = () => {
     return (
@@ -13,7 +13,7 @@ const MainMenuScreen: React.FC = () => {
             </Link>
 
             <Link to='/JoinGame'>
-                <button>Join game</button>
+                <InverseButton>Join game</InverseButton>
             </Link>
 
             <div>Rules of the game:</div>

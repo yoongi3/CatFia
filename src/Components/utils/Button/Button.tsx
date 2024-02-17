@@ -1,12 +1,12 @@
 import { ReactNode, MouseEventHandler } from "react";
 import { ButtonStyled, InverseButtonStyled } from "./ButtonStyled";
 
-type ButtonProps = {
+type Props = {
     children: ReactNode;
     onClick?: MouseEventHandler<HTMLButtonElement>;
 }
 
-export const Button = ({ children, onClick }: ButtonProps) => {
+export const Button = ({ children, onClick }: Props) => {
     return(
         <ButtonStyled onClick={onClick}>
             {children}
@@ -14,7 +14,7 @@ export const Button = ({ children, onClick }: ButtonProps) => {
     );
 };
 
-export const InverseButton = ({ children, onClick }: ButtonProps) => {
+export const InverseButton = ({ children, onClick }: Props) => {
     return(
         <InverseButtonStyled onClick={onClick}>
             {children}
