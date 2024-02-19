@@ -3,17 +3,18 @@ import { MainMenuScreen } from "./Components/ui/MainMenuScreen";
 import { JoinGameScreen } from "./Components/ui/JoinGameScreen";
 import { CreateGameScreen } from "./Components/ui/CreateGameScreen";
 
-import WebSocketConnection from './Components/sockets/WebSocketConnection';
+import {WebSocketProvider} from './Components/sockets/WebSocketProvider';
 
 function App() {
   return (
     <Router>
-      <WebSocketConnection />
-      <Routes>
-        <Route path='/' element={<MainMenuScreen/>}/>
-        <Route path='/CreateGame' element={<CreateGameScreen/>}/>
-        <Route path='/JoinGame' element={<JoinGameScreen/>}/>
-      </Routes>
+      <WebSocketProvider url="http://localhost:5001">
+        <Routes>
+          <Route path='/' element={<MainMenuScreen/>}/>
+          <Route path='/CreateGame' element={<CreateGameScreen/>}/>
+          <Route path='/JoinGame' element={<JoinGameScreen/>}/>
+        </Routes>
+      </WebSocketProvider>
     </Router>
   );
 }

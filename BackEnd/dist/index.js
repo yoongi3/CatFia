@@ -18,8 +18,10 @@ const io = new socket_io_1.Server(server, {
 });
 io.on('connection', (socket) => {
     console.log('A user connected');
-    socket.on('testMessage', (data) => {
+    socket.on('message', (data) => {
         console.log('Received test message from frontend:', data);
+        const randomNumber = Math.floor(Math.random() * 100) + 1;
+        socket.emit('randomNumber', randomNumber);
     });
     socket.on('disconnect', () => {
         console.log('User disconnected');
