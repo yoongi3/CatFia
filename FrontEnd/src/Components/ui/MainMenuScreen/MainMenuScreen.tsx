@@ -1,15 +1,23 @@
-import React from "react"
+import React, { useContext } from "react"
 import { MainMenuStyled } from "./MainMenuStyled"
 import { Link } from "react-router-dom"
 import { Button, InverseButton } from "../../utils/Button/Button"
+import { WebSocketContext } from "../../sockets/WebSocketProvider"
 
 const MainMenuScreen: React.FC = () => {
+    const { socket } = useContext(WebSocketContext);
+
+    const handleCreateGame = () => {
+        if (socket) {
+            socket.emit('message', 'Create New Game');
+        }
+    }
     return (
         <MainMenuStyled>
             <div>Welcome to Catfia</div>
 
             <Link to='/CreateGame'>
-                <Button>Create game</Button>
+                <Button onClick={handleCreateGame}>Create game</Button>
             </Link>
 
             <Link to='/JoinGame'>

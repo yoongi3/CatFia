@@ -21,10 +21,10 @@ const CreateGameScreen: React.FC = () => {
         };
     }, [socket]);
 
-    const handleStartButon = () =>{
+    const handleStartButon = () => {
         if (socket) {
             socket.emit('message', 'Starting Game');
-          }
+        }
     }
 
     return (
