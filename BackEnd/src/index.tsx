@@ -1,4 +1,4 @@
-import server from "./sockets/socketServer";
+import server from "./sockets/SocketController";
 
 const PORT = process.env.PORT || 5001;
 
