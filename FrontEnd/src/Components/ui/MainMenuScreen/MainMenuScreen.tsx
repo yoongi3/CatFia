@@ -9,7 +9,7 @@ const MainMenuScreen: React.FC = () => {
 
     const handleCreateGame = () => {
         if (socket) {
-            socket.emit('message', 'create new room');
+            socket.emit('message', 'createRoom');
         }
     }
     return (

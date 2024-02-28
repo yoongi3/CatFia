@@ -28,7 +28,7 @@ const CreateGameScreen: React.FC = () => {
         };
     }, [socket]);
 
-    const handleStartButon = () => {
+    const handleStartButton = () => {
         if (socket) {
             socket.emit('message', 'Starting Game');
         }
@@ -38,7 +38,7 @@ const CreateGameScreen: React.FC = () => {
         <CreateGameStyled>
             <div>Room Code:</div>
             <div>{roomNum}</div>
-            <Button onClick={handleStartButon}>Start</Button>
+            <Button onClick={handleStartButton}>Start</Button>
         </CreateGameStyled>
     )
 }

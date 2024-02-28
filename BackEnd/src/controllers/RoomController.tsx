@@ -6,22 +6,40 @@ import { Server } from "socket.io";
 import { RoomDatabase, roomDatabase } from "../databases/RoomDatabase";
 import { Room } from "../models/RoomModel";
 import { Player } from "../models/PlayerModel";
-import { generateUniqueRoomID } from "../utils/CodeGenerator";
+import { generateUniquePlayerID, generateUniqueRoomID } from "../utils/CodeGenerator";
 
 export const handleRoomSocketConnections = (io: Server) => {
     io.on('connection', (socket) => {
         console.log('A user connected to room socket');
     
-        socket.on('message', (data) => {
-        console.log('Received request from frontend:', data);
-        if (data === 'create new room'){
+        socket.on('message', (action, roomID, displayName) => {
+        console.log('Received request from frontend:', action);
+
+        if (action === 'createRoom'){
             const room = createRoom();
             RoomDatabase.addRoom(room);
-            console.log('room code:', room.roomID)
             socket.emit('room code', room.roomID);
             console.log(roomDatabase)
         }
-        else socket.emit('message', data);
+
+        else if(action === 'joinRoom'){
+            const player = createPlayer(displayName);
+            const room = RoomDatabase.findRoomByID(roomID);
+            if (room) {
+                const existingPlayer = room.players.find(player => player.displayName === displayName);
+                if (existingPlayer) {
+                    console.log('find new name');
+                }
+                else{
+                    room.players.push(player)
+                    console.log(room)
+                }
+            }
+            else{
+                console.log('room not found')
+            }
+        }
+        else socket.emit('message', action);
         });
     
         socket.on('disconnect', () => {
@@ -29,7 +47,14 @@ export const handleRoomSocketConnections = (io: Server) => {
         });
     });
 }
-
+const createPlayer = (name: string): Player => {
+    const playerID: string = generateUniquePlayerID();
+    const displayName: string = name;
+    const player: Player = {
+        playerID,
+        displayName
+    }; return player;
+}
 const createRoom = (): Room => {
     const roomID: string = generateUniqueRoomID();
     const players: Player[] = [];
@@ -37,6 +62,5 @@ const createRoom = (): Room => {
     const room: Room = {
         roomID,
         players
-    };
-    return room
+    }; return room
 }
