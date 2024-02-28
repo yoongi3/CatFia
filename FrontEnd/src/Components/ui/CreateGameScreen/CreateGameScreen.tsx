@@ -5,19 +5,27 @@ import { WebSocketContext } from "../../sockets/WebSocketProvider";
 
 const CreateGameScreen: React.FC = () => {
     const { socket } = useContext(WebSocketContext);
-    const [randomNumber, setRandomNumber] =  useState<number | null>(null)
+    const [roomNum, setRoomNum] =  useState<number | null>(null)
 
     useEffect(() => {
         if(!socket) return;
-
-        socket.on('randomNumber', (data: number) => {
+    
+        const handleRoomCode = (data: number) => {
             console.log("Received Data from server: ", data)
-
-            setRandomNumber(data);
-        });
-
+            setRoomNum(data);
+        };
+    
+        const handleDisconnect = () => {
+            console.log('User disconnected from room socket');
+        };
+    
+        socket.on('room code', handleRoomCode);
+        socket.on('disconnect', handleDisconnect);
+    
         return () => {
-            socket.off('randomNumber');
+            console.log('Cleaning up');
+            socket.off('room code', handleRoomCode);
+            socket.off('disconnect', handleDisconnect);
         };
     }, [socket]);
 
@@ -30,7 +38,7 @@ const CreateGameScreen: React.FC = () => {
     return (
         <CreateGameStyled>
             <div>Room Code:</div>
-            <div>{randomNumber}</div>
+            <div>{roomNum}</div>
             <Button onClick={handleStartButon}>Start</Button>
         </CreateGameStyled>
     )

@@ -1,6 +1,6 @@
 import { Room } from "../models/RoomModel";
 
-const roomDatabase: Room[] = [];
+export const roomDatabase: Room[] = [];
 
 // Functions to interact with the room database
 export const RoomDatabase = {
@@ -21,5 +21,4 @@ export const RoomDatabase = {
           roomDatabase.splice(index, 1);
         }
     },
-
 }
