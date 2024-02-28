@@ -23,7 +23,6 @@ const CreateGameScreen: React.FC = () => {
         socket.on('disconnect', handleDisconnect);
     
         return () => {
-            console.log('Cleaning up');
             socket.off('room code', handleRoomCode);
             socket.off('disconnect', handleDisconnect);
         };

@@ -6,6 +6,7 @@ import { Server } from "socket.io";
 import { RoomDatabase, roomDatabase } from "../databases/RoomDatabase";
 import { Room } from "../models/RoomModel";
 import { Player } from "../models/PlayerModel";
+import { generateUniqueRoomID } from "../utils/CodeGenerator";
 
 export const handleRoomSocketConnections = (io: Server) => {
     io.on('connection', (socket) => {
@@ -38,8 +39,4 @@ const createRoom = (): Room => {
         players
     };
     return room
-}
-
-const generateUniqueRoomID = () => {
-    return (Math.floor(Math.random() * 100) + 1).toString();
 }

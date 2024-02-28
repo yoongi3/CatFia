@@ -5,6 +5,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.handleRoomSocketConnections = void 0;
 const RoomDatabase_1 = require("../databases/RoomDatabase");
+const CodeGenerator_1 = require("../utils/CodeGenerator");
 const handleRoomSocketConnections = (io) => {
     io.on('connection', (socket) => {
         console.log('A user connected to room socket');
@@ -27,15 +28,12 @@ const handleRoomSocketConnections = (io) => {
 };
 exports.handleRoomSocketConnections = handleRoomSocketConnections;
 const createRoom = () => {
-    const roomID = generateUniqueRoomID();
+    const roomID = (0, CodeGenerator_1.generateUniqueRoomID)();
     const players = [];
     const room = {
         roomID,
         players
     };
     return room;
-};
-const generateUniqueRoomID = () => {
-    return (Math.floor(Math.random() * 100) + 1).toString();
 };
 //# sourceMappingURL=RoomController.js.map
