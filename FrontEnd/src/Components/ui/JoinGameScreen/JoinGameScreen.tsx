@@ -26,8 +26,8 @@ const JoinGameScreen: React.FC = () => {
     return(
         <JoinGameStyled>
             <div>Join A Room</div>
-            <InputBox placeholder="Room Code" value={roomCode} onChange={handleRoomCodeChange}/>
-            <InputBox placeholder="Name" value={playerName} onChange={handlePlayerNameChange}/>
+            <InputBox placeholder="Room Code" value={roomCode} maxLength={4} onChange={handleRoomCodeChange}/>
+            <InputBox placeholder="Name" value={playerName} maxLength={12} onChange={handlePlayerNameChange}/>
             <Button onClick={handleEnterButton}>Enter</Button>
         </JoinGameStyled>
 
