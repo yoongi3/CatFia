@@ -2,65 +2,86 @@
 // It defines endpoints or functions to handle requests related to rooms,
 // such as creating a new room, deleting an existing room, and fetching room data.
 
-import { Server } from "socket.io";
+import { Server, Socket } from "socket.io";
 import { RoomDatabase, roomDatabase } from "../databases/RoomDatabase";
-import { Room } from "../models/RoomModel";
-import { Player } from "../models/PlayerModel";
-import { generateUniquePlayerID, generateUniqueRoomID } from "../utils/CodeGenerator";
+import { createRoom, createPlayer } from "../utils/RoomUtils";
 
 export const handleRoomSocketConnections = (io: Server) => {
-    io.on('connection', (socket) => {
-        console.log('A user connected to room socket');
-    
-        socket.on('message', (action, roomID, displayName) => {
-        console.log('Received request from frontend:', action);
-
-        if (action === 'createRoom'){
-            const room = createRoom();
-            RoomDatabase.addRoom(room);
-            socket.emit('room code', room.roomID);
-            console.log(roomDatabase)
-        }
-
-        else if(action === 'joinRoom'){
-            const player = createPlayer(displayName);
-            const room = RoomDatabase.findRoomByID(roomID);
-            if (room) {
-                const existingPlayer = room.players.find(player => player.displayName === displayName);
-                if (existingPlayer) {
-                    console.log('find new name');
-                }
-                else{
-                    room.players.push(player)
-                    console.log(room)
-                }
-            }
-            else{
-                console.log('room not found')
-            }
-        }
-        else socket.emit('message', action);
+    io.on('connection', (socket: Socket) => {
+        socket.on('message', (action: string, roomID: string, displayName: string) => {
+            handleMessage(io, socket, action, roomID, displayName);
         });
-    
+
         socket.on('disconnect', () => {
-        console.log('User disconnected from room socket');
+            console.log('User disconnected from room socket');
+            handleDisconnect(socket);
         });
     });
 }
-const createPlayer = (name: string): Player => {
-    const playerID: string = generateUniquePlayerID();
-    const displayName: string = name;
-    const player: Player = {
-        playerID,
-        displayName
-    }; return player;
-}
-const createRoom = (): Room => {
-    const roomID: string = generateUniqueRoomID();
-    const players: Player[] = [];
 
-    const room: Room = {
-        roomID,
-        players
-    }; return room
+const handleMessage = (io:Server, socket: Socket, action: string, roomID: string, displayName:string) => {
+    console.log('Recieved request from frontend:', action)
+
+    switch (action) {
+        case 'createRoom':
+            handleCreateRoom(socket);
+            break;
+        case 'joinRoom':
+            handleJoinRoom(io, socket, roomID, displayName);
+            break;
+        default:
+            socket.emit('message', action);
+            break;
+    }
+}
+
+const handleCreateRoom = (socket: Socket,) => {
+    const room = createRoom(socket.id);
+    RoomDatabase.addRoom(room);
+    socket.emit('room code', room.roomID);
+    console.log(roomDatabase)
+}
+
+const handleJoinRoom = (io: Server, socket: Socket, roomID: string, displayName: string) => {
+    const player = createPlayer(displayName);
+    const room = RoomDatabase.findRoomByID(roomID);
+
+    if(!room) {
+        console.log('Room not found');
+        return;
+    }
+    
+    const existingPlayer = room.players.find(player => player.displayName === displayName);
+
+    if (existingPlayer) {
+        console.log('Player with the same name already exists');
+        // Handle error message
+        return;
+    }
+    
+    room.players.push(player)
+    console.log(room)
+
+    const hostSocket = findHostSocket(io, roomID);
+    if (hostSocket) {
+        hostSocket.emit('playerJoined', player);
+    } else {
+        console.log('Host socket not found');
+    }
+    
+}
+
+const handleDisconnect = (socket: Socket) => {
+    const index = roomDatabase.findIndex(room => room.hostID === socket.id);
+        if (index !== -1) {
+            RoomDatabase.removeRoomById(roomDatabase[index].roomID);
+        }
+}
+
+const findHostSocket = (io:Server, roomID: string): Socket | undefined => {
+    const room = RoomDatabase.findRoomByID(roomID);
+    if (room && room.hostID) {
+        return io.sockets.sockets.get(room.hostID);
+    }
+    return undefined;
 }
