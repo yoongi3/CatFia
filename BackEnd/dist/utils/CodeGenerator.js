@@ -11,8 +11,8 @@ const generateUniqueRoomID = () => {
     return code;
 };
 exports.generateUniqueRoomID = generateUniqueRoomID;
+// TODO make a proper code generator
 const generateUniquePlayerID = () => {
-    // change to proper generator later
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let code;
     do {

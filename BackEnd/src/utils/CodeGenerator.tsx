@@ -8,8 +8,9 @@ export const generateUniqueRoomID = () => {
     } while (RoomDatabase.findRoomByID(code));
     return code;
 }
+
+// TODO make a proper code generator
 export const generateUniquePlayerID = () => {
-    // change to proper generator later
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let code;
     do {

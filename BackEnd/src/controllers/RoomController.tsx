@@ -64,7 +64,8 @@ const handleJoinRoom = (io: Server, socket: Socket, roomID: string, displayName:
 
     const hostSocket = findHostSocket(io, roomID);
     if (hostSocket) {
-        hostSocket.emit('playerJoined', player);
+        console.log(player.displayName + 'joined the lobby')
+        hostSocket.emit('playerJoined', player.displayName);
     } else {
         console.log('Host socket not found');
     }

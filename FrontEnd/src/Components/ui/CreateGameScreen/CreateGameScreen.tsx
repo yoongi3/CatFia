@@ -18,8 +18,13 @@ const CreateGameScreen: React.FC = () => {
         const handleDisconnect = () => {
             console.log('User disconnected from room socket');
         };
+
+        const handleNewPlayer = (playerInfo: string) => {
+            console.log(playerInfo)
+        }
     
         socket.on('room code', handleRoomCode);
+        socket.on('playerJoined', handleNewPlayer)
         socket.on('disconnect', handleDisconnect);
     
         return () => {
