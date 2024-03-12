@@ -19,5 +19,30 @@ exports.RoomDatabase = {
             exports.roomDatabase.splice(index, 1);
         }
     },
+    // Get room ID by host ID
+    getRoomIDByHostID(hostID) {
+        const room = exports.roomDatabase.find(room => room.hostID === hostID);
+        return room ? room.roomID : undefined;
+    },
+    // Find player by socket ID
+    findPlayerBySocketID(socketID) {
+        let player;
+        exports.roomDatabase.forEach(room => {
+            const foundPlayer = room.players.find(player => player.ID === socketID);
+            if (foundPlayer) {
+                player = foundPlayer;
+            }
+        });
+        return player;
+    },
+    // Remove player by ID
+    removePlayer(playerID) {
+        exports.roomDatabase.forEach(room => {
+            const index = room.players.findIndex(player => player.ID === playerID);
+            if (index !== -1) {
+                room.players.splice(index, 1);
+            }
+        });
+    }
 };
 //# sourceMappingURL=RoomDatabase.js.map

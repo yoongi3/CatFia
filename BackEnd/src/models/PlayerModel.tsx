@@ -1,4 +1,4 @@
 export type Player = {
-    playerID: string;
+    ID: string;
     displayName: string;
 }

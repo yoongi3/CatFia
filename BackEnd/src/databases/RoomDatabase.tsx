@@ -1,4 +1,5 @@
 import { Room } from "../models/RoomModel";
+import { Player } from "../models/PlayerModel";
 
 export const roomDatabase: Room[] = [];
 
@@ -21,4 +22,32 @@ export const RoomDatabase = {
           roomDatabase.splice(index, 1);
         }
     },
+
+    // Get room ID by host ID
+    getRoomIDByHostID(hostID: string): string | undefined {
+        const room = roomDatabase.find(room => room.hostID === hostID);
+        return room ? room.roomID : undefined;
+    },
+
+    // Find player by socket ID
+    findPlayerBySocketID(socketID: string): Player | undefined {
+        let player: Player | undefined;
+        roomDatabase.forEach(room => {
+            const foundPlayer = room.players.find(player => player.ID === socketID);
+            if (foundPlayer) {
+                player = foundPlayer;
+            }
+        });
+        return player;
+    },
+
+    // Remove player by ID
+    removePlayer(playerID: string): void {
+        roomDatabase.forEach(room => {
+            const index = room.players.findIndex(player => player.ID === playerID);
+            if (index !== -1) {
+                room.players.splice(index, 1);
+            }
+        });
+    }
 }

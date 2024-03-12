@@ -2,11 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createRoom = exports.createPlayer = void 0;
 const CodeGenerator_1 = require("./CodeGenerator");
-const createPlayer = (name) => {
-    const playerID = (0, CodeGenerator_1.generateUniquePlayerID)();
+const createPlayer = (socketID, name) => {
+    const playerID = socketID;
     const displayName = name;
     const player = {
-        playerID,
+        ID: playerID,
         displayName
     };
     return player;

@@ -12,7 +12,7 @@ const handleRoomSocketConnections = (io) => {
             handleMessage(io, socket, action, roomID, displayName);
         });
         socket.on('disconnect', () => {
-            console.log('User disconnected from room socket');
+            console.log(socket.id + 'disconnected from room socket');
             handleDisconnect(socket);
         });
     });
@@ -39,7 +39,7 @@ const handleCreateRoom = (socket) => {
     console.log(RoomDatabase_1.roomDatabase);
 };
 const handleJoinRoom = (io, socket, roomID, displayName) => {
-    const player = (0, RoomUtils_1.createPlayer)(displayName);
+    const player = (0, RoomUtils_1.createPlayer)(socket.id, displayName);
     const room = RoomDatabase_1.RoomDatabase.findRoomByID(roomID);
     if (!room) {
         console.log('Room not found');
@@ -56,6 +56,7 @@ const handleJoinRoom = (io, socket, roomID, displayName) => {
     const hostSocket = findHostSocket(io, roomID);
     if (hostSocket) {
         console.log(player.displayName + 'joined the lobby');
+        console.log('socket: ' + player.ID);
         hostSocket.emit('playerJoined', player.displayName);
     }
     else {
@@ -63,9 +64,19 @@ const handleJoinRoom = (io, socket, roomID, displayName) => {
     }
 };
 const handleDisconnect = (socket) => {
-    const index = RoomDatabase_1.roomDatabase.findIndex(room => room.hostID === socket.id);
-    if (index !== -1) {
-        RoomDatabase_1.RoomDatabase.removeRoomById(RoomDatabase_1.roomDatabase[index].roomID);
+    // If socket is a host ID delete from RoomDB
+    const roomID = RoomDatabase_1.RoomDatabase.getRoomIDByHostID(socket.id);
+    if (roomID) {
+        console.log('Host socket disconnected, removing room ' + roomID);
+        RoomDatabase_1.RoomDatabase.removeRoomById(roomID);
+    }
+    // If socket is a player ID remove from room
+    else {
+        const player = RoomDatabase_1.RoomDatabase.findPlayerBySocketID(socket.id);
+        if (player) {
+            console.log(player.displayName + ' disconnected');
+            RoomDatabase_1.RoomDatabase.removePlayer(player.ID);
+        }
     }
 };
 const findHostSocket = (io, roomID) => {

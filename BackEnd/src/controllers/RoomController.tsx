@@ -13,7 +13,7 @@ export const handleRoomSocketConnections = (io: Server) => {
         });
 
         socket.on('disconnect', () => {
-            console.log('User disconnected from room socket');
+            console.log(socket.id +'disconnected from room socket');
             handleDisconnect(socket);
         });
     });
@@ -43,7 +43,7 @@ const handleCreateRoom = (socket: Socket,) => {
 }
 
 const handleJoinRoom = (io: Server, socket: Socket, roomID: string, displayName: string) => {
-    const player = createPlayer(displayName);
+    const player = createPlayer(socket.id, displayName);
     const room = RoomDatabase.findRoomByID(roomID);
 
     if(!room) {
@@ -65,6 +65,7 @@ const handleJoinRoom = (io: Server, socket: Socket, roomID: string, displayName:
     const hostSocket = findHostSocket(io, roomID);
     if (hostSocket) {
         console.log(player.displayName + 'joined the lobby')
+        console.log('socket: ' + player.ID)
         hostSocket.emit('playerJoined', player.displayName);
     } else {
         console.log('Host socket not found');
@@ -73,11 +74,22 @@ const handleJoinRoom = (io: Server, socket: Socket, roomID: string, displayName:
 }
 
 const handleDisconnect = (socket: Socket) => {
-    const index = roomDatabase.findIndex(room => room.hostID === socket.id);
-        if (index !== -1) {
-            RoomDatabase.removeRoomById(roomDatabase[index].roomID);
+    // If socket is a host ID delete from RoomDB
+    const roomID = RoomDatabase.getRoomIDByHostID(socket.id);
+    if (roomID) {
+        console.log('Host socket disconnected, removing room ' + roomID);
+        RoomDatabase.removeRoomById(roomID);
+    }
+    // If socket is a player ID remove from room
+    else {
+        const player = RoomDatabase.findPlayerBySocketID(socket.id);
+        if (player) {
+            console.log(player.displayName + ' disconnected');
+            RoomDatabase.removePlayer(player.ID);
         }
+    }
 }
+
 
 const findHostSocket = (io:Server, roomID: string): Socket | undefined => {
     const room = RoomDatabase.findRoomByID(roomID);

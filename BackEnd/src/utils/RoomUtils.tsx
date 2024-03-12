@@ -3,11 +3,11 @@ import { Room } from "../models/RoomModel";
 
 import { generateUniquePlayerID, generateUniqueRoomID } from "./CodeGenerator";
 
-export const createPlayer = (name: string): Player => {
-    const playerID: string = generateUniquePlayerID();
+export const createPlayer = (socketID:string, name: string): Player => {
+    const playerID: string = socketID;
     const displayName: string = name;
     const player: Player = {
-        playerID,
+        ID: playerID,
         displayName
     }; return player;
 }
