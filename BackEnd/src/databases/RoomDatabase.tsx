@@ -1,21 +1,26 @@
+/*
+  Manages room and player state, providing functions for adding, finding, and removing rooms,
+  as well as associating players with rooms and querying rooms by player ID.
+*/
+
 import { Room } from "../models/RoomModel";
-import { Player } from "../models/PlayerModel";
 
 export const roomDatabase: Room[] = [];
 
-// Functions to interact with the room database
+const playerRoomMap: { [playerID: string]: string } = {};
+
 export const RoomDatabase = {
     // Add room to database
     addRoom(room: Room): void {
         roomDatabase.push(room);
     },
 
-    // Find room
+    // Find room by ID
     findRoomByID(roomID: string): Room | undefined {
         return roomDatabase.find(room => room.roomID === roomID)
     },
     
-    // Delete room
+    // Delete room by ID
     removeRoomById(roomID: string): void {
         const index = roomDatabase.findIndex(room => room.roomID === roomID);
         if (index !== -1) {
@@ -29,25 +34,22 @@ export const RoomDatabase = {
         return room ? room.roomID : undefined;
     },
 
-    // Find player by socket ID
-    findPlayerBySocketID(socketID: string): Player | undefined {
-        let player: Player | undefined;
-        roomDatabase.forEach(room => {
-            const foundPlayer = room.players.find(player => player.ID === socketID);
-            if (foundPlayer) {
-                player = foundPlayer;
-            }
-        });
-        return player;
+    // Associate player with room
+    addPlayerToRoomMap(playerID: string, roomID: string): void {
+        playerRoomMap[playerID] = roomID;
     },
 
-    // Remove player by ID
-    removePlayer(playerID: string): void {
-        roomDatabase.forEach(room => {
-            const index = room.players.findIndex(player => player.ID === playerID);
-            if (index !== -1) {
-                room.players.splice(index, 1);
-            }
-        });
-    }
+    // Find room by player ID
+    findRoomByPlayerID(playerID: string): Room | undefined {
+        const roomID = playerRoomMap[playerID];
+        if (roomID) {
+            return roomDatabase.find(room => room.roomID === roomID);
+        }
+        return undefined;
+    },
+
+    // Remove player from room map
+    removePlayerFromRoomMap(playerID: string): void {
+        delete playerRoomMap[playerID];
+    },
 }

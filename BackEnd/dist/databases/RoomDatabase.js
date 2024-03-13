@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RoomDatabase = exports.roomDatabase = void 0;
 exports.roomDatabase = [];
+const playerRoomMap = {};
 // Functions to interact with the room database
 exports.RoomDatabase = {
     // Add room to database
@@ -24,25 +25,20 @@ exports.RoomDatabase = {
         const room = exports.roomDatabase.find(room => room.hostID === hostID);
         return room ? room.roomID : undefined;
     },
-    // Find player by socket ID
-    findPlayerBySocketID(socketID) {
-        let player;
-        exports.roomDatabase.forEach(room => {
-            const foundPlayer = room.players.find(player => player.ID === socketID);
-            if (foundPlayer) {
-                player = foundPlayer;
-            }
-        });
-        return player;
+    addPlayerToRoomMap(playerID, roomID) {
+        playerRoomMap[playerID] = roomID;
     },
-    // Remove player by ID
-    removePlayer(playerID) {
-        exports.roomDatabase.forEach(room => {
-            const index = room.players.findIndex(player => player.ID === playerID);
-            if (index !== -1) {
-                room.players.splice(index, 1);
-            }
-        });
-    }
+    // Find room by player ID
+    findRoomByPlayerID(playerID) {
+        const roomID = playerRoomMap[playerID];
+        if (roomID) {
+            return exports.roomDatabase.find(room => room.roomID === roomID);
+        }
+        return undefined;
+    },
+    // Remove player from room map
+    removePlayerFromRoomMap(playerID) {
+        delete playerRoomMap[playerID];
+    },
 };
 //# sourceMappingURL=RoomDatabase.js.map

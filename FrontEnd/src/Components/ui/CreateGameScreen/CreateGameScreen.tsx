@@ -21,10 +21,15 @@ const CreateGameScreen: React.FC = () => {
 
         const handleNewPlayer = (playerInfo: string) => {
             console.log(playerInfo)
+        };
+        
+        const handlePlayerLeft = (playerInfo: string) => {
+            console.log(playerInfo, 'left')
         }
     
         socket.on('room code', handleRoomCode);
-        socket.on('playerJoined', handleNewPlayer)
+        socket.on('playerJoined', handleNewPlayer);
+        socket.on('playerLeft', handlePlayerLeft);
         socket.on('disconnect', handleDisconnect);
     
         return () => {

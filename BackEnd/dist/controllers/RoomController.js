@@ -1,7 +1,8 @@
 "use strict";
-// This controller manages the creation, deletion, and retrieval of rooms. 
-// It defines endpoints or functions to handle requests related to rooms,
-// such as creating a new room, deleting an existing room, and fetching room data.
+/*
+Manages WebSocket connections for rooms: creation, deletion, joining, and message handling.
+Interacts with RoomDatabase for room and player state management.
+*/
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.handleRoomSocketConnections = void 0;
 const RoomDatabase_1 = require("../databases/RoomDatabase");
@@ -9,16 +10,16 @@ const RoomUtils_1 = require("../utils/RoomUtils");
 const handleRoomSocketConnections = (io) => {
     io.on('connection', (socket) => {
         socket.on('message', (action, roomID, displayName) => {
-            handleMessage(io, socket, action, roomID, displayName);
+            handleClientMessage(io, socket, action, roomID, displayName);
         });
         socket.on('disconnect', () => {
             console.log(socket.id + 'disconnected from room socket');
-            handleDisconnect(socket);
+            handleDisconnect(io, socket);
         });
     });
 };
 exports.handleRoomSocketConnections = handleRoomSocketConnections;
-const handleMessage = (io, socket, action, roomID, displayName) => {
+const handleClientMessage = (io, socket, action, roomID, displayName) => {
     console.log('Recieved request from frontend:', action);
     switch (action) {
         case 'createRoom':
@@ -52,30 +53,38 @@ const handleJoinRoom = (io, socket, roomID, displayName) => {
         return;
     }
     room.players.push(player);
-    console.log(room);
+    RoomDatabase_1.RoomDatabase.addPlayerToRoomMap(socket.id, roomID);
     const hostSocket = findHostSocket(io, roomID);
     if (hostSocket) {
-        console.log(player.displayName + 'joined the lobby');
-        console.log('socket: ' + player.ID);
+        console.log(player.displayName + ' joined the lobby');
         hostSocket.emit('playerJoined', player.displayName);
     }
     else {
         console.log('Host socket not found');
     }
 };
-const handleDisconnect = (socket) => {
-    // If socket is a host ID delete from RoomDB
+const handleDisconnect = (io, socket) => {
+    // Check if the disconnected socket is a host
     const roomID = RoomDatabase_1.RoomDatabase.getRoomIDByHostID(socket.id);
     if (roomID) {
         console.log('Host socket disconnected, removing room ' + roomID);
         RoomDatabase_1.RoomDatabase.removeRoomById(roomID);
     }
-    // If socket is a player ID remove from room
     else {
-        const player = RoomDatabase_1.RoomDatabase.findPlayerBySocketID(socket.id);
-        if (player) {
-            console.log(player.displayName + ' disconnected');
-            RoomDatabase_1.RoomDatabase.removePlayer(player.ID);
+        // Check if the disconnected socket is a player
+        const room = RoomDatabase_1.RoomDatabase.findRoomByPlayerID(socket.id);
+        if (room) {
+            console.log('Player disconnected from room ' + room.roomID);
+            // Remove the player from the room
+            const playerIndex = room.players.findIndex(p => p.ID === socket.id);
+            if (playerIndex !== -1) {
+                const playerName = room.players[playerIndex].displayName;
+                room.players.splice(playerIndex, 1);
+                const hostSocket = findHostSocket(io, room.roomID);
+                if (hostSocket) {
+                    hostSocket.emit('playerLeft', playerName);
+                }
+            }
         }
     }
 };
