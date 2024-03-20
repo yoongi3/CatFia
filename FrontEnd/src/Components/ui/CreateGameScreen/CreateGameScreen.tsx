@@ -6,6 +6,7 @@ import { WebSocketContext } from "../../sockets/WebSocketProvider";
 const CreateGameScreen: React.FC = () => {
     const { socket } = useContext(WebSocketContext);
     const [roomNum, setRoomNum] =  useState<number | null>(null)
+    const [players, setPlayers] = useState<string[]>([]);
 
     useEffect(() => {
         if(!socket) return;
@@ -19,12 +20,14 @@ const CreateGameScreen: React.FC = () => {
             console.log('User disconnected from room socket');
         };
 
-        const handleNewPlayer = (playerInfo: string) => {
-            console.log(playerInfo)
+        const handleNewPlayer = (player: string) => {
+            setPlayers(prevPlayers => [...prevPlayers, player]);
+            console.log(player)
         };
-        
-        const handlePlayerLeft = (playerInfo: string) => {
-            console.log(playerInfo, 'left')
+
+        const handlePlayerLeft = (player: string) => {
+            setPlayers(prevPlayers => prevPlayers.filter(player => player !== player));
+            console.log(player, 'left')
         }
     
         socket.on('room code', handleRoomCode);
@@ -34,6 +37,8 @@ const CreateGameScreen: React.FC = () => {
     
         return () => {
             socket.off('room code', handleRoomCode);
+            socket.off('playerJoined', handleNewPlayer);
+            socket.off('playerLeft', handlePlayerLeft);
             socket.off('disconnect', handleDisconnect);
         };
     }, [socket]);
@@ -49,6 +54,11 @@ const CreateGameScreen: React.FC = () => {
             <div>Room Code:</div>
             <div>{roomNum}</div>
             <Button onClick={handleStartButton}>Start</Button>
+            <ul>
+                {players.map((player, index) => (
+                    <li key={index}>{player}</li>
+                ))}
+            </ul>
         </CreateGameStyled>
     )
 }

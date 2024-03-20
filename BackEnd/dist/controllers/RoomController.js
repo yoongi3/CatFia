@@ -1,7 +1,7 @@
 "use strict";
 /*
-Manages WebSocket connections for rooms: creation, deletion, joining, and message handling.
-Interacts with RoomDatabase for room and player state management.
+  Manages WebSocket connections for rooms: creation, deletion, joining, and message handling.
+  Interacts with RoomDatabase for room and player state management.
 */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.handleRoomSocketConnections = void 0;
@@ -67,7 +67,7 @@ const handleDisconnect = (io, socket) => {
     // Check if the disconnected socket is a host
     const roomID = RoomDatabase_1.RoomDatabase.getRoomIDByHostID(socket.id);
     if (roomID) {
-        console.log('Host socket disconnected, removing room ' + roomID);
+        console.log('Host socket disconnected, removing room: ' + roomID);
         RoomDatabase_1.RoomDatabase.removeRoomById(roomID);
     }
     else {

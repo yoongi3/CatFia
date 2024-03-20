@@ -76,7 +76,7 @@ const handleDisconnect = (io: Server, socket: Socket) => {
     // Check if the disconnected socket is a host
     const roomID = RoomDatabase.getRoomIDByHostID(socket.id);
     if (roomID) {
-        console.log('Host socket disconnected, removing room ' + roomID);
+        console.log('Host socket disconnected, removing room: ' + roomID);
         RoomDatabase.removeRoomById(roomID);
     } else {
         // Check if the disconnected socket is a player
