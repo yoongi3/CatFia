@@ -15,7 +15,7 @@ export const handleRoomSocketConnections = (io: Server) => {
 
         socket.on('disconnect', () => {
             console.log(socket.id +'disconnected from room socket');
-            handleDisconnect(io, socket);
+            handleSocketDisconnect(io, socket);
         });
     });
 }
@@ -30,10 +30,19 @@ const handleClientMessage = (io:Server, socket: Socket, action: string, roomID: 
         case 'joinRoom':
             handleJoinRoom(io, socket, roomID, displayName);
             break;
+        case 'getName':
+            handleGetName(socket);
+            break;
         default:
             socket.emit('message', action);
+            console.log(action)
             break;
     }
+}
+
+const handleGetName = (socket: Socket) => {
+    const name = RoomDatabase.findPlayerNameByPlayerID(socket.id);
+    socket.emit('name', name);
 }
 
 const handleCreateRoom = (socket: Socket,) => {
@@ -48,6 +57,7 @@ const handleJoinRoom = (io: Server, socket: Socket, roomID: string, displayName:
     const room = RoomDatabase.findRoomByID(roomID);
 
     if(!room) {
+        socket.emit('errorMessage', 'Room not found')
         console.log('Room not found');
         return;
     }
@@ -56,7 +66,7 @@ const handleJoinRoom = (io: Server, socket: Socket, roomID: string, displayName:
 
     if (existingPlayer) {
         console.log('Player with the same name already exists');
-        // Handle error message
+        socket.emit('errorMessage', 'Name in use')
         return;
     }
     
@@ -66,13 +76,14 @@ const handleJoinRoom = (io: Server, socket: Socket, roomID: string, displayName:
     const hostSocket = findHostSocket(io, roomID);
     if (hostSocket) {
         console.log(player.displayName + ' joined the lobby')
+        socket.emit('joinRoom', player.displayName)
         hostSocket.emit('playerJoined', player.displayName);
     } else {
         console.log('Host socket not found');
     }
 }
 
-const handleDisconnect = (io: Server, socket: Socket) => {
+const handleSocketDisconnect = (io: Server, socket: Socket) => {
     // Check if the disconnected socket is a host
     const roomID = RoomDatabase.getRoomIDByHostID(socket.id);
     if (roomID) {

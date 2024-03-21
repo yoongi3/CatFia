@@ -44,5 +44,12 @@ exports.RoomDatabase = {
     removePlayerFromRoomMap(playerID) {
         delete playerRoomMap[playerID];
     },
+    // Find player name by player ID
+    findPlayerNameByPlayerID(playerID) {
+        const roomID = playerRoomMap[playerID];
+        const room = roomID && exports.roomDatabase.find(room => room.roomID === roomID);
+        const player = room === null || room === void 0 ? void 0 : room.players.find(player => player.ID === playerID);
+        return player === null || player === void 0 ? void 0 : player.displayName;
+    },
 };
 //# sourceMappingURL=RoomDatabase.js.map

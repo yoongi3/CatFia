@@ -52,4 +52,12 @@ export const RoomDatabase = {
     removePlayerFromRoomMap(playerID: string): void {
         delete playerRoomMap[playerID];
     },
+
+    // Find player name by player ID
+    findPlayerNameByPlayerID(playerID: string): string | undefined {
+        const roomID = playerRoomMap[playerID];
+        const room = roomID && roomDatabase.find(room => room.roomID === roomID);
+        const player = room?.players.find(player => player.ID === playerID);
+        return player?.displayName;
+    },
 }
