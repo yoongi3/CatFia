@@ -28,10 +28,18 @@ const handleClientMessage = (io, socket, action, roomID, displayName) => {
         case 'joinRoom':
             handleJoinRoom(io, socket, roomID, displayName);
             break;
+        case 'getName':
+            handleGetName(socket);
+            break;
         default:
             socket.emit('message', action);
+            console.log(action);
             break;
     }
+};
+const handleGetName = (socket) => {
+    const name = RoomDatabase_1.RoomDatabase.findPlayerNameByPlayerID(socket.id);
+    socket.emit('name', name);
 };
 const handleCreateRoom = (socket) => {
     const room = (0, RoomUtils_1.createRoom)(socket.id);
@@ -43,13 +51,14 @@ const handleJoinRoom = (io, socket, roomID, displayName) => {
     const player = (0, RoomUtils_1.createPlayer)(socket.id, displayName);
     const room = RoomDatabase_1.RoomDatabase.findRoomByID(roomID);
     if (!room) {
+        socket.emit('errorMessage', 'Room not found');
         console.log('Room not found');
         return;
     }
     const existingPlayer = room.players.find(player => player.displayName === displayName);
     if (existingPlayer) {
         console.log('Player with the same name already exists');
-        // Handle error message
+        socket.emit('errorMessage', 'Name in use');
         return;
     }
     room.players.push(player);
@@ -57,6 +66,7 @@ const handleJoinRoom = (io, socket, roomID, displayName) => {
     const hostSocket = findHostSocket(io, roomID);
     if (hostSocket) {
         console.log(player.displayName + ' joined the lobby');
+        socket.emit('joinRoom', player.displayName);
         hostSocket.emit('playerJoined', player.displayName);
     }
     else {
