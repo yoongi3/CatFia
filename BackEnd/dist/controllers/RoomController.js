@@ -14,7 +14,7 @@ const handleRoomSocketConnections = (io) => {
         });
         socket.on('disconnect', () => {
             console.log(socket.id + 'disconnected from room socket');
-            handleDisconnect(io, socket);
+            handleSocketDisconnect(io, socket);
         });
     });
 };
@@ -73,7 +73,7 @@ const handleJoinRoom = (io, socket, roomID, displayName) => {
         console.log('Host socket not found');
     }
 };
-const handleDisconnect = (io, socket) => {
+const handleSocketDisconnect = (io, socket) => {
     // Check if the disconnected socket is a host
     const roomID = RoomDatabase_1.RoomDatabase.getRoomIDByHostID(socket.id);
     if (roomID) {

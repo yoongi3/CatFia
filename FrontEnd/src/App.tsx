@@ -9,7 +9,7 @@ import {WebSocketProvider} from './Components/sockets/WebSocketProvider';
 function App() {
   return (
     <Router>
-      <WebSocketProvider url="http://localhost:5001">
+      <WebSocketProvider url={process.env.REACT_APP_SOCKET_SERVER_URL ?? ''}>
         <Routes>
           <Route path='/' element={<MainMenuScreen/>}/>
           <Route path='/CreateGame' element={<CreateGameScreen/>}/>

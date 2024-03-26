@@ -30,8 +30,9 @@ const PlayerScreen: React.FC = () => {
     }, [socket])
     return(
         <PLayerScreenStyled>
-            <div>nihao</div>
+            <div>Welcome</div>
             <div>{name}</div>
+            <div>Waiting for host to start game</div>
         </PLayerScreenStyled>
     )
 }
