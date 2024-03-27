@@ -30,9 +30,18 @@ const PlayerScreen: React.FC = () => {
     }, [socket])
     return(
         <PLayerScreenStyled>
-            <div>Welcome</div>
-            <div>{name}</div>
-            <div>Waiting for host to start game</div>
+            <div>
+                {!name ? (
+                    // add a reusable disconnected screen
+                    <div>Disconnected</div>
+                ) : (
+                    <div>
+                        <div>Welcome</div>
+                        <div>{name}</div>
+                        <div>Waiting for host to start game</div>
+                    </div>
+                )}
+            </div>
         </PLayerScreenStyled>
     )
 }
