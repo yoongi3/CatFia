@@ -16,11 +16,11 @@ const MainMenuScreen: React.FC = () => {
         <MainMenuStyled>
             <div>Welcome to Catfia</div>
 
-            <Link to='/CreateGame'>
+            <Link to='/Host'>
                 <Button onClick={handleCreateGame}>Create game</Button>
             </Link>
 
-            <Link to='/JoinGame'>
+            <Link to='/Player'>
                 <InverseButton>Join game</InverseButton>
             </Link>
 

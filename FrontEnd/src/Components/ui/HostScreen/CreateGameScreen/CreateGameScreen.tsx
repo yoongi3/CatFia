@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react"
 import { CreateGameStyled } from "./CreateGameStyled"
-import { Button } from "../../utils/Button";
-import { WebSocketContext } from "../../sockets/WebSocketProvider";
+import { Button } from "../../../utils/Button";
+import { WebSocketContext } from "../../../sockets/WebSocketProvider";
 
 const CreateGameScreen: React.FC = () => {
     const { socket } = useContext(WebSocketContext);

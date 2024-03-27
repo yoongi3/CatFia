@@ -1,48 +1,19 @@
-import { useContext, useEffect, useState } from "react";
-import { PLayerScreenStyled } from "./PlayerScreenStyled"
-import { WebSocketContext } from "../../sockets/WebSocketProvider";
+import { useState } from "react";
+import { JoinGameScreen } from "./JoinGameScreen"
+import { LobbyScreen } from "./LobbyScreen";
 
 const PlayerScreen: React.FC = () => {
-    const { socket } = useContext(WebSocketContext);
-    const [name, setName] = useState("");
+    const [currentScreen, setCurrentScreen] = useState('JoinGame')
 
-    const getName = () => {
-        if (socket) {
-            socket.emit('message', 'getName');
-        }
-    }
+    const handleScreenToggle = (screen: string) => {
+        setCurrentScreen(screen);
+    };
 
-    useEffect(() => {
-        if (!socket) return;
-
-        const handleName = (playerName: string) => {
-            setName(playerName);
-        };
-
-        getName();
-        console.log('request sent')
-
-        socket.on('name', handleName);
-
-        return () => {
-            socket.off('name', handleName);
-        };
-    }, [socket])
     return(
-        <PLayerScreenStyled>
-            <div>
-                {!name ? (
-                    // add a reusable disconnected screen
-                    <div>Disconnected</div>
-                ) : (
-                    <div>
-                        <div>Welcome</div>
-                        <div>{name}</div>
-                        <div>Waiting for host to start game</div>
-                    </div>
-                )}
-            </div>
-        </PLayerScreenStyled>
+        <div>
+            {currentScreen === 'JoinGame' && <JoinGameScreen goToLobby={() => handleScreenToggle('Lobby')} />}
+            {currentScreen === 'Lobby' && <LobbyScreen/>}
+        </div>
     )
 }
 

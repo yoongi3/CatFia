@@ -1,12 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import { JoinGameStyled } from "./JoinGameStyled";
-import { InputBox } from "../../utils/InputBox";
-import { Button } from "../../utils/Button";
-import { WebSocketContext } from "../../sockets/WebSocketProvider";
-import { useNavigate } from "react-router-dom";
+import { InputBox } from "../../../utils/InputBox";
+import { Button } from "../../../utils/Button";
+import { WebSocketContext } from "../../../sockets/WebSocketProvider";
 
-const JoinGameScreen: React.FC = () => {
-    const navigate = useNavigate();
+const JoinGameScreen: React.FC<{ goToLobby: () => void }> = ({ goToLobby }) => {
     const { socket } = useContext(WebSocketContext);
     const [roomCode, setRoomCode] = useState<string>("");
     const [playerName, setPlayerName] = useState<string>("");
@@ -16,7 +14,7 @@ const JoinGameScreen: React.FC = () => {
 
         const handleJoinRoom = (message: string) => {
             console.log(message, socket)
-            navigate('/Lobby')
+            goToLobby();
         }
 
         const handleErrorMessage = (message: string) => [
