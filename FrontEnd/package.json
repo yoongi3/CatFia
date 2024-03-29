@@ -15,7 +15,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "export REACT_APP_SOCKET_SERVER_URL=\"http://$(ipconfig getifaddr en0):5001\" && echo $REACT_APP_SOCKET_SERVER_URL && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
